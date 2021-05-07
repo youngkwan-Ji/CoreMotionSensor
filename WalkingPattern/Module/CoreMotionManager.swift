@@ -11,25 +11,35 @@ import Foundation
 import CoreMotion
 
 protocol CoreMotionSensorDelegate {
-    func updatedUserAcceleration(userMotion : CMAcceleration)
-    func updatedGravity(gravityMotion : CMAcceleration)
-    func updatedRotationRate(rotationMotion : CMRotationRate)
-    func updatedAttitude(attitudeMotion : CMAttitude)
+    func updatedMotion(motion : CMDeviceMotion)
+}
+
+extension CoreMotionSensorDelegate {
+    func updatedUserAcceleration(userMotion : CMAcceleration){}
+    func updatedGravity(gravityMotion : CMAcceleration){}
+    func updatedRotationRate(rotationMotion : CMRotationRate){}
+    func updatedAttitude(attitudeMotion : CMAttitude){}
+    func updatedProximity(state : Bool){}
 }
 
 class CoreMotionManager{
     let device = UIDevice.current
     let manager = CMMotionManager.init()
+    var proximityCheckTimer : Timer?
+    var proximityCheckInterval : Int?
     var delegate : CoreMotionSensorDelegate?
     
     init() {
-        device.isProximityMonitoringEnabled = true // 근접센서 온오프
+        device.isProximityMonitoringEnabled = true // 근접센서 OnOff
         manager.deviceMotionUpdateInterval = 1/1 // 센서 정밀도
     }
     
-    func startMotionCheck(){
+    func startMotionCheck() -> Bool{
         if manager.isDeviceMotionAvailable{
             manager.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: {(motion , err) -> Void in
+                if let nMotion = motion {
+                    self.updatedMotion(motion: nMotion)
+                }
                 if let userMotion = motion?.userAcceleration{
                     self.updatedUserAcceleration(userMotion: userMotion)
                 }
@@ -43,18 +53,38 @@ class CoreMotionManager{
                     self.updatedAttitude(attitudeMotion: attitudeMotion)
                 }
             })
+            return true
         }else{
             let alert = UIAlertController.init(title: nil, message: "Unavailable DeviceMotion", preferredStyle: .alert)
+            alert.addAction(.init(title: "확인", style: .cancel, handler: nil))
             UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+            return false
         }
     }
     
     func stopMotionCheck(){
         manager.stopDeviceMotionUpdates()
     }
+    
+    func startProximityCheck(){
+        proximityCheckTimer = Timer.scheduledTimer(timeInterval: TimeInterval(proximityCheckInterval ?? 1), target: self, selector: #selector(proximityCheck), userInfo: nil, repeats: true)
+        proximityCheckTimer?.fire()
+    }
+    
+    func stopProximityCheck(){
+        proximityCheckTimer?.invalidate()
+    }
+    
+    @objc func proximityCheck() {
+        updatedProximity(state: device.proximityState)
+    }
 }
 
 extension CoreMotionManager : CoreMotionSensorDelegate {
+    func updatedMotion(motion: CMDeviceMotion) {
+        delegate?.updatedMotion(motion: motion)
+    }
+    
     func updatedUserAcceleration(userMotion: CMAcceleration) {
         delegate?.updatedUserAcceleration(userMotion: userMotion)
     }
@@ -69,5 +99,9 @@ extension CoreMotionManager : CoreMotionSensorDelegate {
     
     func updatedAttitude(attitudeMotion: CMAttitude) {
         delegate?.updatedAttitude(attitudeMotion: attitudeMotion)
+    }
+    
+    func updatedProximity(state : Bool){
+        delegate?.updatedProximity(state: state)
     }
 }

@@ -63,11 +63,8 @@
 			isa = PBXGroup;
 			children = (
 				C2028F581F9EEAA80070166D /* AppDelegate.swift */,
-				C2028F5A1F9EEAA80070166D /* SensorViewController.swift */,
-				C2028F6A1F9EEABD0070166D /* SensorViewController.xib */,
-				F29381F726450D6500286DF4 /* FileListViewController.swift */,
-				F29381F826450D6500286DF4 /* FileListViewController.xib */,
-				F29381FB26450E6900286DF4 /* CoreMotionManager.swift */,
+				F293820026452D1B00286DF4 /* View */,
+				F29381FF26452D0000286DF4 /* Module */,
 				C2028F5F1F9EEAA80070166D /* Assets.xcassets */,
 				C2028F611F9EEAA80070166D /* LaunchScreen.storyboard */,
 				C2028F641F9EEAA80070166D /* Info.plist */,
@@ -81,6 +78,25 @@
 				C2028F6D1F9F0C380070166D /* CoreMotion.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F29381FF26452D0000286DF4 /* Module */ = {
+			isa = PBXGroup;
+			children = (
+				F29381FB26450E6900286DF4 /* CoreMotionManager.swift */,
+			);
+			path = Module;
+			sourceTree = "<group>";
+		};
+		F293820026452D1B00286DF4 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C2028F5A1F9EEAA80070166D /* SensorViewController.swift */,
+				C2028F6A1F9EEABD0070166D /* SensorViewController.xib */,
+				F29381F726450D6500286DF4 /* FileListViewController.swift */,
+				F29381F826450D6500286DF4 /* FileListViewController.xib */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
