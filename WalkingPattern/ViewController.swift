@@ -65,7 +65,7 @@ class ViewController: UIViewController {
 			self.manager.stopDeviceMotionUpdates()
 			self.nowDateSet("종료")
 			self.writeTextFile(self.startDate + " ~ " + self.endDate, self.dataString)
-			self.lblStatus.text = "대기중"
+			self.lblStatus.text = "측정대기"
 			self.lbluserZ.text = "0"
 			self.lbluserY.text = "0"
 			self.lbluserX.text = "0"
