@@ -9,8 +9,7 @@
 import UIKit
 import CoreMotion
 
-class ViewController: UIViewController {
-
+class SensorViewController: UIViewController {
 	@IBOutlet weak var lbluserZ: UILabel! // 사용자 가속도
 	@IBOutlet weak var lbluserY: UILabel!
 	@IBOutlet weak var lbluserX: UILabel!
@@ -28,67 +27,64 @@ class ViewController: UIViewController {
 	@IBOutlet weak var btnEnd: UIButton!
 	@IBOutlet weak var btnStart: UIButton!
 	
-
-	let myDevice = UIDevice.current
 	var checkInfo : Timer?
-	let manager = CMMotionManager.init()
 	let fileManager = FileManager.default
 	
 	var dataString = "근접센서on/off , 사용자가속도x,y,z , 중력벡터x,y,z , 회전속도x,y,z , 장치방향roll,pitch,yaw\n"
 	var startDate = ""
 	var endDate = ""
+    
+    var sensing : Bool = false
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		myDevice.isProximityMonitoringEnabled = true // 근접센서 온오프
-		manager.deviceMotionUpdateInterval = 1/1 // 센서 정밀도
 	}
 	
-	@IBAction func startAction(_ sender: UIButton) {
-		if self.lblStatus.text == "기록중....."{
-			let alert = UIAlertController.init(title: "데이터를 기록중입니다.", message: "", preferredStyle: .alert)
-			let action = UIAlertAction.init(title: "확인", style: .cancel, handler: nil)
-			alert.addAction(action)
-			self.present(alert, animated: true, completion: nil)
-		}else{
-			self.motionCheck()
-			checkInfo = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(proximityCheck), userInfo: nil, repeats: true)
-			checkInfo?.fire()
-			self.nowDateSet("시작")
-		}
-		self.lblStatus.text = "기록중....."
-	}
-	
-	@IBAction func endAction(_ sender: UIButton) {
-		if self.lblStatus.text! == "기록중....."{
-			checkInfo!.invalidate()
-			self.manager.stopDeviceMotionUpdates()
-			self.nowDateSet("종료")
-			self.writeTextFile(self.startDate + " ~ " + self.endDate, self.dataString)
-			self.lblStatus.text = "측정대기"
-			self.lbluserZ.text = "0"
-			self.lbluserY.text = "0"
-			self.lbluserX.text = "0"
-			self.lblgravityX.text = "0"
-			self.lblgravityY.text = "0"
-			self.lblgravityZ.text = "0"
-			self.lblrotationX.text = "0"
-			self.lblrotationY.text = "0"
-			self.lblrotationZ.text = "0"
-			self.lblattitudeX.text = "0"
-			self.lblattitudeY.text = "0"
-			self.lblattitudeZ.text = "0"
-			self.lblProximity.text = "0"
-			self.dataString = "근접센서on/off , 사용자가속도x,y,z , 중력벡터x,y,z , 회전속도x,y,z , 장치방향roll,pitch,yaw\n"
-			
-		}else{
-			let alert = UIAlertController.init(title: "시작을 먼저 눌러주세요.", message: "", preferredStyle: .alert)
-			let action = UIAlertAction.init(title: "확인", style: .cancel, handler: nil)
-			alert.addAction(action)
-			self.present(alert, animated: true, completion: nil)
-		}
-	}
-	
+    @IBAction func sensingAction(_ sender: UIButton) {
+        if sender.tag == 10 {
+            if self.lblStatus.text == "기록중....."{
+                let alert = UIAlertController.init(title: "데이터를 기록중입니다.", message: "", preferredStyle: .alert)
+                let action = UIAlertAction.init(title: "확인", style: .cancel, handler: nil)
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+            }else{
+                self.motionCheck()
+                checkInfo = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(proximityCheck), userInfo: nil, repeats: true)
+                checkInfo?.fire()
+                self.nowDateSet("시작")
+            }
+            self.lblStatus.text = "기록중....."
+        }else{
+            if self.lblStatus.text! == "기록중....."{
+                checkInfo!.invalidate()
+                self.manager.stopDeviceMotionUpdates()
+                self.nowDateSet("종료")
+                self.writeTextFile(self.startDate + " ~ " + self.endDate, self.dataString)
+                self.lblStatus.text = "측정대기"
+                self.lbluserZ.text = "0"
+                self.lbluserY.text = "0"
+                self.lbluserX.text = "0"
+                self.lblgravityX.text = "0"
+                self.lblgravityY.text = "0"
+                self.lblgravityZ.text = "0"
+                self.lblrotationX.text = "0"
+                self.lblrotationY.text = "0"
+                self.lblrotationZ.text = "0"
+                self.lblattitudeX.text = "0"
+                self.lblattitudeY.text = "0"
+                self.lblattitudeZ.text = "0"
+                self.lblProximity.text = "0"
+                self.dataString = "근접센서on/off , 사용자가속도x,y,z , 중력벡터x,y,z , 회전속도x,y,z , 장치방향roll,pitch,yaw\n"
+                
+            }else{
+                let alert = UIAlertController.init(title: "시작을 먼저 눌러주세요.", message: "", preferredStyle: .alert)
+                let action = UIAlertAction.init(title: "확인", style: .cancel, handler: nil)
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+   
 	func motionCheck() {
 		if manager.isDeviceMotionAvailable{
 			manager.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: {(motion , err) -> Void in
