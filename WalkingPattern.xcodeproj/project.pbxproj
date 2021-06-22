@@ -15,6 +15,7 @@
 		F29381F926450D6500286DF4 /* FileListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29381F726450D6500286DF4 /* FileListViewController.swift */; };
 		F29381FA26450D6500286DF4 /* FileListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F29381F826450D6500286DF4 /* FileListViewController.xib */; };
 		F29381FC26450E6900286DF4 /* CoreMotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29381FB26450E6900286DF4 /* CoreMotionManager.swift */; };
+		F2A0A97F2681DA8E00903D22 /* Define.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A0A97E2681DA8E00903D22 /* Define.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		F29381F726450D6500286DF4 /* FileListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileListViewController.swift; sourceTree = "<group>"; };
 		F29381F826450D6500286DF4 /* FileListViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileListViewController.xib; sourceTree = "<group>"; };
 		F29381FB26450E6900286DF4 /* CoreMotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMotionManager.swift; sourceTree = "<group>"; };
+		F2A0A97E2681DA8E00903D22 /* Define.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Define.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 		C2028F571F9EEAA80070166D /* WalkingPattern */ = {
 			isa = PBXGroup;
 			children = (
+				F2A0A97E2681DA8E00903D22 /* Define.swift */,
 				C2028F581F9EEAA80070166D /* AppDelegate.swift */,
 				F293820026452D1B00286DF4 /* View */,
 				F29381FF26452D0000286DF4 /* Module */,
@@ -175,6 +178,7 @@
 				F29381FC26450E6900286DF4 /* CoreMotionManager.swift in Sources */,
 				C2028F5B1F9EEAA80070166D /* SensorViewController.swift in Sources */,
 				C2028F591F9EEAA80070166D /* AppDelegate.swift in Sources */,
+				F2A0A97F2681DA8E00903D22 /* Define.swift in Sources */,
 				F29381F926450D6500286DF4 /* FileListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

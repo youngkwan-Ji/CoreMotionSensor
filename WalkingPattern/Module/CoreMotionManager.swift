@@ -11,15 +11,11 @@ import Foundation
 import CoreMotion
 
 protocol CoreMotionSensorDelegate {
-    func updatedMotion(motion : CMDeviceMotion)
-}
-
-extension CoreMotionSensorDelegate {
-    func updatedUserAcceleration(userMotion : CMAcceleration){}
-    func updatedGravity(gravityMotion : CMAcceleration){}
-    func updatedRotationRate(rotationMotion : CMRotationRate){}
-    func updatedAttitude(attitudeMotion : CMAttitude){}
-    func updatedProximity(state : Bool){}
+    func updatedUserAcceleration(userMotion : CMAcceleration)
+    func updatedGravity(gravityMotion : CMAcceleration)
+    func updatedRotationRate(rotationMotion : CMRotationRate)
+    func updatedAttitude(attitudeMotion : CMAttitude)
+    func updatedProximity(state : Bool)
 }
 
 class CoreMotionManager{
@@ -37,20 +33,17 @@ class CoreMotionManager{
     func startMotionCheck() -> Bool{
         if manager.isDeviceMotionAvailable{
             manager.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: {(motion , err) -> Void in
-                if let nMotion = motion {
-                    self.updatedMotion(motion: nMotion)
-                }
                 if let userMotion = motion?.userAcceleration{
-                    self.updatedUserAcceleration(userMotion: userMotion)
+                    self.delegate?.updatedUserAcceleration(userMotion: userMotion)
                 }
                 if let gravityMotion = motion?.gravity {
-                    self.updatedGravity(gravityMotion: gravityMotion)
+                    self.delegate?.updatedGravity(gravityMotion: gravityMotion)
                 }
                 if let rotationMotion = motion?.rotationRate{
-                    self.updatedRotationRate(rotationMotion: rotationMotion)
+                    self.delegate?.updatedRotationRate(rotationMotion: rotationMotion)
                 }
                 if let attitudeMotion = motion?.attitude{
-                    self.updatedAttitude(attitudeMotion: attitudeMotion)
+                    self.delegate?.updatedAttitude(attitudeMotion: attitudeMotion)
                 }
             })
             return true
@@ -76,32 +69,6 @@ class CoreMotionManager{
     }
     
     @objc func proximityCheck() {
-        updatedProximity(state: device.proximityState)
-    }
-}
-
-extension CoreMotionManager : CoreMotionSensorDelegate {
-    func updatedMotion(motion: CMDeviceMotion) {
-        delegate?.updatedMotion(motion: motion)
-    }
-    
-    func updatedUserAcceleration(userMotion: CMAcceleration) {
-        delegate?.updatedUserAcceleration(userMotion: userMotion)
-    }
-    
-    func updatedGravity(gravityMotion: CMAcceleration) {
-        delegate?.updatedGravity(gravityMotion: gravityMotion)
-    }
-    
-    func updatedRotationRate(rotationMotion: CMRotationRate) {
-        delegate?.updatedRotationRate(rotationMotion: rotationMotion)
-    }
-    
-    func updatedAttitude(attitudeMotion: CMAttitude) {
-        delegate?.updatedAttitude(attitudeMotion: attitudeMotion)
-    }
-    
-    func updatedProximity(state : Bool){
-        delegate?.updatedProximity(state: state)
+        delegate?.updatedProximity(state: device.proximityState)
     }
 }

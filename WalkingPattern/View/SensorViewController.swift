@@ -30,16 +30,19 @@ class SensorViewController: UIViewController {
     var checkInfo : Timer?
     let fileManager = FileManager.default
     
-    var dataString = "근접센서on/off , 사용자가속도x,y,z , 중력벡터x,y,z , 회전속도x,y,z , 장치방향roll,pitch,yaw\n"
+    var dataString = COLUMN_TITLE
     var startDate = ""
     var endDate = ""
     
     let CMManager : CoreMotionManager = CoreMotionManager.init()
     var sensing : Bool = false
+    var writeTimer : Timer?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         CMManager.delegate = self
+        self.title = "센서데이터 수집"
     }
     
     //MARK: - IBActions
@@ -51,6 +54,10 @@ class SensorViewController: UIViewController {
             
                 sender.setTitle("stop", for: .normal)
                 lblStatus.text = "sensing"
+                
+                writeTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(writeData), userInfo: nil, repeats: true)
+                writeTimer?.fire()
+                
             }else{
                 return
             }
@@ -58,25 +65,28 @@ class SensorViewController: UIViewController {
             CMManager.stopMotionCheck()
             CMManager.stopProximityCheck()
             setLogDateTime()
+            writeTimer?.invalidate()
+            
             
             sender.setTitle("start", for: .normal)
             lblStatus.text = "stop"
-            lbluserZ.text = "0"
-            lbluserY.text = "0"
-            lbluserX.text = "0"
-            lblgravityX.text = "0"
-            lblgravityY.text = "0"
-            lblgravityZ.text = "0"
-            lblrotationX.text = "0"
-            lblrotationY.text = "0"
-            lblrotationZ.text = "0"
-            lblattitudeX.text = "0"
-            lblattitudeY.text = "0"
-            lblattitudeZ.text = "0"
-            lblProximity.text = "0"
-            dataString = "근접센서on/off , 사용자가속도x,y,z , 중력벡터x,y,z , 회전속도x,y,z , 장치방향roll,pitch,yaw\n"
+            lbluserZ.text = DEFAULT_VALUE
+            lbluserY.text = DEFAULT_VALUE
+            lbluserX.text = DEFAULT_VALUE
+            lblgravityX.text = DEFAULT_VALUE
+            lblgravityY.text = DEFAULT_VALUE
+            lblgravityZ.text = DEFAULT_VALUE
+            lblrotationX.text = DEFAULT_VALUE
+            lblrotationY.text = DEFAULT_VALUE
+            lblrotationZ.text = DEFAULT_VALUE
+            lblattitudeX.text = DEFAULT_VALUE
+            lblattitudeY.text = DEFAULT_VALUE
+            lblattitudeZ.text = DEFAULT_VALUE
+            lblProximity.text = DEFAULT_VALUE
             
+
             writeTextFile(startDate + "~" + endDate, dataString)
+            dataString = COLUMN_TITLE
         }
         
         sensing = !sensing
@@ -89,20 +99,25 @@ class SensorViewController: UIViewController {
         
         switch sender.tag {
         case 1:
-            alert.title = "사용자가 기기에 가하는 가속도입니다."
+            alert.title = ACC_SENSOR_DESC
         case 2:
-            alert.title = "중력이 작용하는 방향으로 -g 만큼의 값을 출력합니다."
+            alert.title = GRAVITY_SENSOR_DESC
         case 3:
-            alert.title = "장치의 회전 속도입니다."
+            alert.title = ROTATION_SENSOR_DESC
         case 4:
-            alert.title = "기울기 각도 값입니다. x = roll , y = pitch , z = yaw 를 나타냅니다."
+            alert.title = ATT_SENSOR_DESC
         case 5 :
-            alert.title = "근접센서의 상태입니다. (근접센서가 반응해서 화면이 꺼진 상태가 true입니다)"
+            alert.title = PROX_SENSOR_DESC
         default:
             return
         }
         self.present(alert, animated: true, completion: nil)
     }
+    
+    @IBAction func showFileList(_ sender: Any) {
+        navigationController?.pushViewController(FileListViewController.init(nibName: "FileListViewController", bundle: nil), animated: true)
+    }
+    
     
     //MARK: - Functions
     func writeTextFile(_ date : String, _ info : String){
@@ -110,15 +125,23 @@ class SensorViewController: UIViewController {
         let filePath = dirPath.appendingPathComponent(date + ".txt")
         let infoData = info.data(using: String.Encoding.utf8)
         
+        var msg = "";
         if fileManager.createFile(atPath: filePath, contents: infoData, attributes: nil){
-            
+            msg = "데이터 저장이 완료되었습니다."
+        }else{
+            msg = "데이터 저장에 실패하였습니다."
         }
+        
+        let alert = UIAlertController.init(title: "알림", message: msg, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
+    
     
     func setLogDateTime(){
         let nowDate = Date()
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.dateFormat = "yyyy-MM-dd_HH:mm:ss"
         dateFormatter.locale = Locale(identifier: "ko_KR")
         
         if sensing {
@@ -127,15 +150,16 @@ class SensorViewController: UIViewController {
             self.endDate = dateFormatter.string(from: nowDate)
         }
     }
+    
+    @objc func writeData() {
+        dataString += "\(lblProximity.text!), \(lbluserX.text!), \(lbluserY.text!), \(lbluserZ.text!), \(lblgravityX.text!), \(lblgravityY.text!), \(lblgravityZ.text!), \(lblrotationX.text!), \(lblrotationY.text!), \(lblrotationZ.text!), \(lblattitudeX.text!), \(lblattitudeY.text!), \(lblattitudeZ.text!)\n"
+    }
+    
 }
 
 
 //MARK: - CoreMotionSensorDelegate
 extension SensorViewController : CoreMotionSensorDelegate{
-    func updatedMotion(motion: CMDeviceMotion) {
-        dataString = dataString + "\(lblProximity.text!), \(lbluserX.text!), \(lbluserY.text!), \(lbluserZ.text!), \(lblgravityX.text!), \(lblgravityY.text!), \(lblgravityZ.text!), \(lblrotationX.text!), \(lblrotationY.text!), \(lblrotationZ.text!), \(lblattitudeX.text!), \(lblattitudeY.text!), \(lblattitudeZ.text!)\n"
-    }
-    
     func updatedUserAcceleration(userMotion: CMAcceleration) {
         lbluserX.text = (String)(userMotion.x)
         lbluserY.text = (String)(userMotion.y)
